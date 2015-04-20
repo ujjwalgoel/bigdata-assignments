@@ -2,7 +2,8 @@ PIG SCRIPT
 ==========
 
 ###Analysis-1
- 
+
+<pre><code> 
 rmf hourly-counts-pig-all
  a = load '/shared/tweets2011.txt' USING PigStorage('\t') as (tweetId: long, userName: chararray, creationTime: chararray, tweetText: chararray);
  b = foreach a generate tweetId, userName, ToDate(creationTime, 'EEE MMM dd HH:mm:ss Z yyyy', 'UTC') as creationTime, tweetText;
@@ -13,9 +14,11 @@ rmf hourly-counts-pig-all
  g = Order f by creationHour;
  h = foreach g generate CONCAT(CONCAT(CONCAT(SUBSTRING(creationHour,5,7), '/'), CONCAT(SUBSTRING(creationHour,8,10),' ')), SUBSTRING(creationHour,11,13)) as creationHour, count;
  store h into 'hourly-counts-pig-all';
+</code></pre>
 
 ###Analysis-2
 	
+<pre><code>
  rmf hourly-counts-pig-egypt
  a = load '/shared/tweets2011.txt' USING PigStorage('\t') as (tweetId: long, userName: chararray, creationTime: chararray, tweetText: chararray);
  b = foreach a generate tweetId, userName, ToDate(creationTime, 'EEE MMM dd HH:mm:ss Z yyyy', 'UTC') as creationTime, tweetText;
@@ -27,14 +30,15 @@ rmf hourly-counts-pig-all
  h = Order g by creationHour;
  i = foreach h generate CONCAT(CONCAT(CONCAT(SUBSTRING(creationHour,5,7), '/'), CONCAT(SUBSTRING(creationHour,8,10),' ')), SUBSTRING(creationHour,11,13)) as creationHour, count;
  store i into 'hourly-counts-pig-egypt';
-
+</code></pre>
 
 SPARK SCRIPT
 ============
 
 ###Analysis-1
 
-import org.joda.time.format.DateTimeFormat
+<pre><code>
+ import org.joda.time.format.DateTimeFormat
  import org.joda.time.DateTimeZone
  
  val raw = sc.textFile("/shared/tweets2011.txt")
@@ -51,10 +55,11 @@ import org.joda.time.format.DateTimeFormat
 	}
 	}).filter(x => x != null).reduceByKey(_+_).sortByKey()
 	tweets.saveAsTextFile("hourly-counts-spark-all")
-
+</code></pre>
 
 ###Analysis-2
 
+<pre><code>
  import org.joda.time.format.DateTimeFormat
  import org.joda.time.DateTimeZone
  
@@ -76,5 +81,5 @@ import org.joda.time.format.DateTimeFormat
 	}
 	}).filter(x => x != null).reduceByKey(_+_).sortByKey()
 	tweets.saveAsTextFile("hourly-counts-spark-egypt")
-
+</code></pre>
 
